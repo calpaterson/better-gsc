@@ -1,13 +1,14 @@
 {# -*- mode: jinja2 -*- #}
 {% extends "base.html" %}
+
 {% block main %}
   <h1>{{ dataset_name }}</h1>
+
   <h2>Graphs</h2>
   {% for column in df.columns %}
     <img src="{{ url_for("dataset_graph", dataset_name=dataset_name, column=column) }}">
   {% endfor %}
   <h2>Full data</h2>
   {{ df.to_html(classes="table", justify="unset")|safe }}
-  </h2>
 {% endblock %}
 

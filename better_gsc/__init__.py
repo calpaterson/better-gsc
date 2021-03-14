@@ -74,6 +74,7 @@ def main(gsc_zipfile):
     def dataset(dataset_name):
         return flask.render_template(
             "dataset.html",
+            dataset_names=sorted(dfs.keys()),
             dataset_name=dataset_name,
             df=dfs[dataset_name]
         )
@@ -86,11 +87,11 @@ def main(gsc_zipfile):
             fig = ax.get_figure()
 
             buf = TemporaryFile()
-            fig.savefig(buf, format="png")
+            fig.savefig(buf, format="svg")
             buf.seek(0)
 
             with contextlib.closing(pyplot):
-                return flask.Response(buf, mimetype="image/png")
+                return flask.Response(buf, mimetype="image/svg+xml")
 
 
     app.run()

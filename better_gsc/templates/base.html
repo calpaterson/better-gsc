@@ -12,8 +12,27 @@
     <title>{{ page_title or "better-gsc" }}</title>
   </head>
   <body>
-    <main>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">better-gsc</a>
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          {% set current_dataset = dataset_name %}
+          {% for dataset_name in dataset_names %}
+            <li class="nav-item">
+              {% if dataset_name == current_dataset %}
+                <a class="nav-link active" aria-current="page" href="#">{{ dataset_name }}</a>
+              {% else %}
+                <a class="nav-link" href="{{ url_for("dataset", dataset_name=dataset_name) }}">{{ dataset_name }}</a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
+
+    <main class="container">
       {% block main %}
       {% endblock %}
+    </main>
   </body>
 </html>
