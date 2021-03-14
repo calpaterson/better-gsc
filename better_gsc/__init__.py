@@ -45,6 +45,11 @@ def get_plot(dataset_name, df, column):
     return df[column].plot(**kwargs)
 
 
+def ctr_converter(raw):
+    # Turn "n+.n+% into a float"
+    return float(raw[:-1])
+
+
 @click.command()
 @click.argument("gsc-zipfile", type=click.File(mode="rb"))
 def main(gsc_zipfile):
@@ -55,7 +60,11 @@ def main(gsc_zipfile):
     logger.info("opened zipfile, contents: %s", pformat(infolist))
 
     dfs = {
-        info.filename[:-4]: pandas.read_csv(zip_h.open(info.filename), index_col=0)
+        info.filename[:-4]: pandas.read_csv(
+            zip_h.open(info.filename),
+            index_col=0,
+            converters={"CTR": ctr_converter}
+        )
         for info in infolist
         if info.filename.endswith(".csv")
     }
