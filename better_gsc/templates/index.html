@@ -1,0 +1,10 @@
+{# -*- mode: jinja2 -*- #}
+{% extends "base.html" %}
+{% block main %}
+  <h1>Index of datasets</h1>
+  <ul>
+    {% for dataset_name in dfs.keys()|sort %}
+      <li><a href="{{ url_for('dataset', dataset_name=dataset_name) }}">{{ dataset_name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
