@@ -40,7 +40,6 @@ def get_sorted_df(dataset_name, df):
 
 def get_plot(dataset_name, df, column):
     kwargs = PLOT_KWARGS.get(dataset_name, {})
-    print(column)
     kwargs["title"] = column
     return df[column].plot(**kwargs)
 
@@ -74,10 +73,7 @@ def main(gsc_zipfile):
 
     @app.route("/")
     def index():
-        return flask.render_template(
-            "index.html",
-            dfs=dfs
-        )
+        return flask.redirect(flask.url_for("dataset", dataset_name="Dates"))
 
     @app.route("/dataset/<dataset_name>")
     def dataset(dataset_name):
