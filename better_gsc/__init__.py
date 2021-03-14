@@ -4,6 +4,7 @@ from pprint import pformat
 from tempfile import TemporaryFile
 import contextlib
 import threading
+from datetime import datetime
 
 import matplotlib
 from matplotlib import pyplot
@@ -41,12 +42,22 @@ def get_sorted_df(dataset_name, df):
 def get_plot(dataset_name, df, column):
     kwargs = PLOT_KWARGS.get(dataset_name, {})
     kwargs["title"] = column
-    return df[column].plot(**kwargs)
+    df = df[[column]]
+    if dataset_name == "Dates":
+        df = df[df.index > datetime(2020, 5, 1)]
+        rolling = df.rolling(32).mean()
+        df = df.assign(rolling=rolling[column])
+        return df.plot(**kwargs)
+    else:
+        return df.plot(**kwargs)
 
 
 def ctr_converter(raw):
     # Turn "n+.n+% into a float"
     return float(raw[:-1])
+
+def date_converter(raw):
+    return datetime.strptime(raw, "%Y-%m-%d")
 
 
 @click.command()
@@ -62,7 +73,10 @@ def main(gsc_zipfile):
         info.filename[:-4]: pandas.read_csv(
             zip_h.open(info.filename),
             index_col=0,
-            converters={"CTR": ctr_converter}
+            converters={
+                "CTR": ctr_converter,
+                "Date": date_converter,
+            }
         )
         for info in infolist
         if info.filename.endswith(".csv")
@@ -88,6 +102,7 @@ def main(gsc_zipfile):
     def dataset_graph(dataset_name, column):
         df = get_sorted_df(dataset_name, dfs[dataset_name])
         with PYPLOT_LOCK:
+            matplotlib.rcParams.update({'figure.autolayout': True})
             ax = get_plot(dataset_name, df, column)
             fig = ax.get_figure()
 
